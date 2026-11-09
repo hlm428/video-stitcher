@@ -1,0 +1,136 @@
+/* 视频拼接小工具 · 简洁三步 */
+
+:root {
+  --bg: #f7f7fb;
+  --card: #ffffff;
+  --text: #33333d;
+  --sub: #8b8b98;
+  --accent: #5b6ac4;
+  --line: #e5e5ef;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+main { max-width: 720px; margin: 0 auto; padding-bottom: 30px; }
+
+.top { max-width: 720px; margin: 0 auto; padding: 26px 16px 8px; text-align: center; }
+.top h1 { font-size: 22px; letter-spacing: 1px; }
+.topSub { font-size: 12.5px; color: var(--sub); margin-top: 6px; }
+.presetBtn {
+  margin-top: 12px; border: 1px solid var(--accent); color: var(--accent);
+  background: transparent; border-radius: 999px; padding: 8px 20px;
+  font-size: 13px; cursor: pointer; font-weight: 600;
+}
+.presetBtn:hover { background: var(--accent); color: #fff; }
+
+.step {
+  background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+  padding: 18px; margin-top: 16px;
+}
+.stepHead { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.stepNo {
+  width: 26px; height: 26px; border-radius: 50%; background: var(--accent);
+  color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 14px;
+}
+.stepHead h2 { font-size: 16px; }
+
+/* 上传 */
+.dropZone {
+  border: 2px dashed var(--accent); border-radius: 16px; padding: 30px 16px;
+  text-align: center; transition: background 0.15s;
+}
+.dropZone.over { background: #eef0ff; }
+.dzMain { font-size: 14.5px; }
+.pickBtn {
+  display: inline-block; margin-top: 10px; background: var(--accent); color: #fff;
+  border-radius: 12px; padding: 9px 22px; font-size: 14px; cursor: pointer; font-weight: 600;
+}
+.dzHint { font-size: 11.5px; color: var(--sub); margin-top: 10px; }
+
+/* 片段列表 */
+.clipList { display: flex; flex-direction: column; gap: 10px; }
+.empty { font-size: 13px; color: var(--sub); text-align: center; padding: 10px; }
+.clipCard {
+  display: flex; gap: 12px; align-items: center;
+  border: 1px solid var(--line); border-radius: 14px; padding: 10px;
+  background: var(--card); cursor: grab;
+}
+.clipCard:active { cursor: grabbing; }
+.clipThumb {
+  width: 96px; min-width: 96px; height: 54px; border-radius: 8px; overflow: hidden;
+  background: var(--line); display: flex; align-items: center; justify-content: center;
+}
+.clipThumb img { width: 100%; height: 100%; object-fit: cover; }
+.thumbPh { font-size: 22px; }
+.clipInfo { flex: 1; min-width: 0; }
+.clipName { font-size: 13.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.clipDur { font-size: 11.5px; color: var(--sub); margin-top: 3px; }
+.clipTrim { display: flex; gap: 6px; align-items: center; margin-top: 7px; font-size: 12px; color: var(--sub); flex-wrap: wrap; }
+.clipTrim input {
+  width: 68px; padding: 4px 6px; border: 1px solid var(--line); border-radius: 8px;
+  font-size: 12.5px; font-family: inherit; color: var(--text);
+}
+.clipOps { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.dragHandle { color: var(--sub); font-size: 16px; cursor: grab; }
+.delBtn { border: none; background: transparent; cursor: pointer; font-size: 15px; }
+
+/* 音频面板 */
+.audioPanel {
+  margin-top: 14px; border-top: 1px dashed var(--line); padding-top: 14px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.panelTitle { font-size: 13px; font-weight: 800; color: var(--sub); letter-spacing: 2px; }
+.audioRow { display: flex; align-items: center; gap: 10px; }
+.audioPick { cursor: pointer; }
+.audioPick span {
+  display: inline-block; border: 1px solid var(--line); border-radius: 10px;
+  padding: 7px 12px; font-size: 12.5px; background: var(--bg);
+}
+.audioPick:hover span { border-color: var(--accent); }
+.audioName { font-size: 12px; color: var(--sub); }
+
+/* 导出面板 */
+.expRow { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+.expRow label { font-size: 13px; color: var(--sub); display: flex; gap: 8px; align-items: center; }
+.expRow input[type='number'] {
+  width: 90px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 10px;
+  font-size: 13.5px; font-family: inherit;
+}
+.expRow code { font-size: 12px; color: var(--text); background: var(--bg); padding: 4px 8px; border-radius: 8px; }
+.chk { font-size: 13.5px; color: var(--text); cursor: pointer; }
+.expBtns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+.primaryBtn {
+  border: none; background: var(--accent); color: #fff; font-size: 14.5px; font-weight: 700;
+  border-radius: 12px; padding: 11px 22px; cursor: pointer;
+}
+.primaryBtn:disabled { opacity: 0.45; cursor: not-allowed; }
+.ghostBtn {
+  border: 1px solid var(--line); background: transparent; color: var(--text);
+  border-radius: 12px; padding: 11px 18px; font-size: 13.5px; cursor: pointer;
+}
+.wasmStatus { font-size: 12px; color: var(--sub); margin-top: 10px; line-height: 1.6; }
+.progressWrap { margin-top: 12px; }
+.progressTrack { height: 10px; border-radius: 5px; background: var(--line); overflow: hidden; }
+.progressBar { height: 100%; width: 0; background: var(--accent); border-radius: 5px; transition: width 0.3s; }
+.progressText { font-size: 12.5px; color: var(--sub); margin-top: 6px; }
+.downloadWrap { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+.dlRow { font-size: 13.5px; color: #2e9e6b; font-weight: 600; }
+.cmdBox { margin-top: 14px; }
+.cmdHint { font-size: 12px; color: var(--sub); margin-bottom: 8px; line-height: 1.6; }
+.cmdBox pre {
+  background: #24262f; color: #d5e3ff; border-radius: 12px; padding: 14px;
+  font-size: 11.5px; line-height: 1.7; overflow-x: auto; white-space: pre-wrap; word-break: break-all;
+}
+.cmdBox .ghostBtn { margin-top: 8px; padding: 8px 16px; }
+
+.foot { text-align: center; font-size: 11.5px; color: var(--sub); padding: 20px 14px 30px; }
+
+@media (max-width: 560px) {
+  .clipTrim input { width: 56px; }
+}

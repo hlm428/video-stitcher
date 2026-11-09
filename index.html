@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="视频拼接小工具——上传片段、拖动排序、剪头去尾、淡入淡出、混音响度统一，导出 720p + 480p。浏览器里直接拼，拼不动就复制命令。" />
+    <title>视频拼接小工具</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="top">
+      <h1>🎞️ 视频拼接小工具</h1>
+      <p class="topSub">上传 → 排序 → 导出。手机能看，拼接建议在电脑上做。</p>
+      <button id="presetBtn" class="presetBtn">🍊 一键填入柑橘预设</button>
+    </header>
+
+    <main>
+      <!-- 第一步：上传 -->
+      <section class="step">
+        <div class="stepHead"><span class="stepNo">1</span><h2>上传片段</h2></div>
+        <div id="dropZone" class="dropZone">
+          <p class="dzMain">把视频片段拖到这里，或</p>
+          <label class="pickBtn">选择文件<input id="fileInput" type="file" accept="video/*" multiple hidden /></label>
+          <p class="dzHint">支持 mp4 / webm / mov · 建议按播放顺序选</p>
+        </div>
+      </section>
+
+      <!-- 第二步：排序 + 剪裁 + 音频 -->
+      <section class="step" id="stepEdit">
+        <div class="stepHead"><span class="stepNo">2</span><h2>排序 · 剪头去尾 · 音频</h2></div>
+        <div id="clipList" class="clipList"></div>
+
+        <div class="audioPanel">
+          <div class="panelTitle">音频</div>
+          <div class="audioRow">
+            <label class="audioPick"><span>🎙️ 旁白（可选）</span><input id="narInput" type="file" accept="audio/*" hidden /></label>
+            <span id="narName" class="audioName">未选择</span>
+          </div>
+          <div class="audioRow">
+            <label class="audioPick"><span>🎵 背景音乐（可选，自动比旁白低 15dB）</span><input id="bgmInput" type="file" accept="audio/*" hidden /></label>
+            <span id="bgmName" class="audioName">未选择</span>
+          </div>
+          <div class="audioRow">
+            <label class="audioPick"><span>💬 SRT 字幕（可选，烧录进视频）</span><input id="srtInput" type="file" accept=".srt,text/plain" hidden /></label>
+            <span id="srtName" class="audioName">未选择</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 第三步：导出 -->
+      <section class="step" id="stepExport">
+        <div class="stepHead"><span class="stepNo">3</span><h2>导出</h2></div>
+        <div class="exportPanel">
+          <div class="expRow">
+            <label>接缝淡入淡出（秒）<input id="fadeInput" type="number" step="0.001" min="0" value="0.125" /></label>
+            <label>输出响度<code>-16 LUFS（自动 loudnorm）</code></label>
+          </div>
+          <div class="expRow">
+            <label class="chk"><input id="out720" type="checkbox" checked /> 1280×720 完整版</label>
+            <label class="chk"><input id="out480" type="checkbox" checked /> 854×480 手机版</label>
+          </div>
+          <div class="expBtns">
+            <button id="exportBtn" class="primaryBtn" disabled>🚀 浏览器里直接导出</button>
+            <button id="cmdBtn" class="ghostBtn" disabled>📋 生成 ffmpeg 命令（本地跑）</button>
+          </div>
+          <div id="wasmStatus" class="wasmStatus">浏览器导出引擎未加载——点上面按钮时按需加载（约 25MB，仅首次）。</div>
+          <div id="progressWrap" class="progressWrap" hidden>
+            <div class="progressTrack"><div id="progressBar" class="progressBar"></div></div>
+            <div id="progressText" class="progressText">准备中…</div>
+          </div>
+          <div id="downloadWrap" class="downloadWrap" hidden></div>
+          <div id="cmdBox" class="cmdBox" hidden>
+            <p class="cmdHint">把片段文件（in0.mp4…）和音频放同一个目录，整段复制到终端跑。字幕烧录只有本地 ffmpeg 支持（浏览器核心不含 libass）：</p>
+            <pre id="cmdText"></pre>
+            <button id="copyCmd" class="ghostBtn">📋 一键复制</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">项目自动保存在本地（元数据 + 文件本体），关掉页面下次打开还在 · 拼不动时用「生成命令」本地跑</footer>
+
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
+    <script src="https://unpkg.com/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
