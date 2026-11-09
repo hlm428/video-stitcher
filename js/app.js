@@ -433,7 +433,6 @@ function buildCommand() {
     chains.push(`[${i}:v]${f.join(',')}[v${i}]`);
   });
   let tail = '';
-  let mapV = '[vout]';
   let mapA = '';
   let audioInputs = '';
   let extra = [];
@@ -461,14 +460,18 @@ function buildCommand() {
   }
   const concatIn = clips.map((_, i) => `[v${i}]`).join('');
   chains.push(`${concatIn}concat=n=${clips.length}:v=1:a=0[vout]`);
+  // 字幕烧录接在 concat 之后的滤镜链里（-vf 与 -filter_complex 不能同时用在同一路输出）
+  if (state.srt) {
+    chains.push(`[vout]subtitles=${state.srt.name}[vsub]`);
+  }
   const filterComplex = chains.join(';') + tail;
-  const srtFilter = state.srt ? `,subtitles=${state.srt.name}:force_style='FontName=Noto Sans CJK SC,FontSize=18'` : '';
+  const mapV2 = state.srt ? '[vsub]' : '[vout]';
   const lines = [];
   lines.push('# ① 完整版 720p（接缝淡入淡出 + 混音 + -16 LUFS' + (state.srt ? ' + 字幕烧录' : '') + '）');
   lines.push(`ffmpeg ${inputs}${audioInputs} \\`);
   lines.push(`  -filter_complex "${filterComplex}" \\`);
-  lines.push(`  -map ${mapV} ${mapA} \\`);
-  lines.push(`  -c:v libx264 -preset medium -crf 20 -pix_fmt yuv420p -c:a aac -b:a 192k ${state.srt ? `-vf "subtitles=${state.srt.name}" ` : ''}-y output_720.mp4`);
+  lines.push(`  -map ${mapV2} ${mapA} \\`);
+  lines.push(`  -c:v libx264 -preset medium -crf 20 -pix_fmt yuv420p -c:a aac -b:a 192k -y output_720.mp4`);
   lines.push('');
   lines.push('# ② 手机版 480p');
   lines.push(`ffmpeg -i output_720.mp4 -vf "scale=854:480" -c:v libx264 -preset medium -crf 23 -c:a copy -y output_480.mp4`);
